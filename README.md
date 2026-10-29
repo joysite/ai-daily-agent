@@ -1,5 +1,8 @@
 # AI Daily Agent（本地模型版）
 
+[![Python Tests](https://github.com/joysite/ai-daily-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/joysite/ai-daily-agent/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 一个可独立运行的每日 AI 热点新闻 Agent，采用本地 Ollama 模型完成新闻筛选和摘要，通过 Chroma 进行语义去重，使用 SQLite 持久化新闻与运行记录，最终生成 Markdown 格式的每日 AI 新闻简报。
 
 处理流程：
