@@ -1,0 +1,235 @@
+
+# ============================================================
+# AI Daily Agent - 全局配置
+# ============================================================
+
+app:
+  name: "AI Daily Agent"
+  timezone: "Asia/Shanghai"
+
+  # 日报保存目录
+  output_dir: "./output"
+
+  # 日志配置
+  log_dir: "./logs"
+  log_level: "INFO"
+
+  # 单次运行最多生成多少条新闻
+  max_news_per_report: 20
+
+
+# ============================================================
+# 本地 Ollama 模型配置
+# ============================================================
+
+ollama:
+  # 本地服务地址，不调用任何云端模型 API
+  base_url: "http://localhost:11434"
+
+  # 新闻筛选、摘要和分类模型
+  chat_model: "qwen2.5-coder:7b"
+
+  # 文本向量模型
+  embedding_model: "nomic-embed-text"
+
+  # 模型请求超时时间（秒）
+  timeout: 180
+
+  # 单次提示词最多允许传入的正文字符数
+  max_input_chars: 10000
+
+  # JSON 解析失败后的重试次数
+  max_retries: 2
+
+  # 模型生成参数
+  temperature: 0.1
+
+  # 限制生成长度；实际支持情况取决于 Ollama 模型
+  num_predict: 1200
+
+
+# ============================================================
+# 新闻采集配置
+# ============================================================
+
+collector:
+  # 只采集最近 24 小时发布的新闻
+  lookback_hours: 24
+
+  # 是否启用网页正文补充抓取
+  enable_web_fallback: true
+
+  # 每次网页请求之间的延迟（秒）
+  # 不并发抓取，降低对来源站点的影响
+  request_delay_seconds: 2.0
+
+  # 网页请求超时（秒）
+  request_timeout: 15
+
+  # 单个 RSS 源最多处理多少条候选记录
+  max_items_per_feed: 50
+
+  # 单次运行最多处理多少条候选新闻
+  max_candidates: 200
+
+  # User-Agent 使用可识别的应用标识
+  user_agent: "AIDailyAgent/1.0 (+local personal research)"
+
+  # 对抓取失败的源记录日志，不让单个源故障中断整个任务
+  continue_on_source_error: true
+
+  # RSS 来源列表
+  feeds:
+    - name: "AI前线"
+      url: "https://www.infoq.cn/topic/ai/feed"
+      category_hint: "行业"
+      enabled: true
+
+    # - name: "智谱AI博客"
+    #   url: "https://zhipuai.cn/blog/rss"
+    #   category_hint: "行业"
+    #   enabled: true
+
+    # - name: "Hugging Face Blog"
+    #   url: "https://huggingface.co/blog/feed.xml"
+    #   category_hint: "产品"
+    #   enabled: true
+
+    # - name: "硅基流动"
+    #   url: "https://siliconflow.cn/zh-cn/blog/rss.xml"
+    #   category_hint: "产品"
+    #   enabled: true
+
+    - name: "InfoQ AI"
+      url: "https://www.infoq.cn/feed"
+      category_hint: "行业"
+      enabled: true
+
+    - name: "arXiv cs.AI"
+      url: "https://export.arxiv.org/rss/cs.AI"
+      category_hint: "论文"
+      enabled: true
+
+
+# ============================================================
+# 新闻价值筛选配置
+# ============================================================
+
+filter:
+  enabled: true
+
+  # 仅保留这些分类
+  allowed_categories:
+    - "模型"
+    - "论文"
+    - "产品"
+    - "融资"
+    - "行业"
+
+  # 筛选模型认为的高价值新闻最低分数
+  # 评分范围由 Prompt 约定为 1-10
+  min_score: 6
+
+  # 是否过滤普通教程、营销软文、低信息量内容
+  reject_tutorials: true
+  reject_advertisements: true
+  reject_low_information: true
+
+  # 不允许模型把来源推测当成事实
+  require_evidence: true
+
+
+# ============================================================
+# 新闻摘要配置
+# ============================================================
+
+summary:
+  enabled: true
+
+  # 摘要目标长度（中文字符数）
+  min_chars: 100
+  max_chars: 250
+
+  # 核心亮点数量
+  max_highlights: 3
+
+  # 是否提取关键数据、模型名称、论文地址等
+  extract_key_facts: true
+
+
+# ============================================================
+# SQLite 配置
+# ============================================================
+
+database:
+  # 数据库文件位置
+  path: "./data/news.db"
+
+  # 启动时自动创建不存在的目录和表
+  auto_init: true
+
+  # 连接超时（秒）
+  timeout: 30
+
+
+# ============================================================
+# Chroma 向量去重配置
+# ============================================================
+
+vector_store:
+  enabled: true
+
+  # Chroma 持久化目录
+  path: "./data/chroma"
+
+  # 集合名称
+  collection_name: "ai_news"
+
+  # 相似度比较时间窗口
+  dedup_days: 7
+
+  # 余弦距离阈值：距离越小，语义越相似
+  # 注意：此阈值需要通过实际新闻样本调优
+  cosine_distance_threshold: 0.15
+
+  # 每次查询最多返回的相似新闻数量
+  top_k: 5
+
+  # 向量由本地 Ollama 的 nomic-embed-text 生成
+  use_ollama_embeddings: true
+
+  # nomic-embed-text 文档向量任务前缀
+  document_prefix: "search_document: "
+
+  # 查询向量任务前缀
+  query_prefix: "search_query: "
+
+
+# ============================================================
+# Markdown 日报配置
+# ============================================================
+
+report:
+  # 是否按分类分组
+  group_by_category: true
+
+  # 是否显示新闻评分
+  show_score: true
+
+  # 是否显示原文链接
+  show_source_url: true
+
+  # 是否显示发布时间
+  show_publish_time: true
+
+  # 是否显示核心亮点
+  show_highlights: true
+
+  # 是否在日报末尾生成统计信息
+  include_statistics: true
+
+  # 日期文件命名格式
+  filename_format: "%Y-%m-%d.md"
+
+  # 当天没有符合条件的新闻时，也生成日报
+  generate_empty_report: true

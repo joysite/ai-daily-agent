@@ -1,0 +1,30 @@
+
+# RSS 订阅源解析
+feedparser>=6.0.11,<7.0
+
+# 网页正文提取
+trafilatura>=2.0.0,<3.0
+
+# Chroma 向量数据库
+chromadb>=1.0.0,<2.0
+
+# Ollama 本地模型 Python SDK
+ollama>=0.4.7,<1.0
+
+# YAML 配置文件
+PyYAML>=6.0.2,<7.0
+
+# 环境变量管理
+python-dotenv>=1.0.1,<2.0
+
+# HTTP 请求及连接超时控制
+requests>=2.32.0,<3.0
+
+# 日期、时区处理
+python-dateutil>=2.9.0,<3.0
+
+# 数据模型校验（辅助严格 JSON 输出校验）
+pydantic>=2.10.0,<3.0
+
+# MCP 服务与命令行工具
+mcp[cli]>=1.0.0,<2.0.0
